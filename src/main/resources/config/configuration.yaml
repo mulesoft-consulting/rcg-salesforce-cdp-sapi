@@ -1,0 +1,15 @@
+https:
+  port: "8082"
+
+keystore:
+  path: "keystore.jks"
+  password: "Mule1379?"
+  
+api:
+  id: "18017293"
+  
+cdp:
+  key: "3MVG90UKVM8cm85OUl0GAohz05yhiSmGa.Ynz_aTGKrr9llSg8r9yvAEmlTApFkY0PSWF4NU4FD2blUAYv5WU"
+  secret: "5341AE409A77195FE47C657C34E9C21E1E97F5F68EE5D2B3C9E17A1CB51E28BE"
+  user: "priya.singh@rcgcdp.com"
+  pass: "RCGcdpdemo2022"

@@ -1,0 +1,15 @@
+https:
+  port: ""
+
+keystore:
+  path: ""
+  password: ""
+  
+api:
+  id: ""
+  
+cdp:
+  key: ""
+  secret: ""
+  username: ""
+  password: ""

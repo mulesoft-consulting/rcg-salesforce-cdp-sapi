@@ -1,0 +1,320 @@
+#%RAML 1.0
+types:
+  orderHeader:
+    type: object
+    properties:
+      orderID:
+        example:
+          strict: false
+          value: Ord140001
+        type: string
+        required: true
+      customerID:
+        example:
+          strict: false
+          value: C140001
+        type: string
+        required: true
+      customerEmail?:
+        example:
+          strict: false
+          value: p.s.22@gmail.com
+        type: string
+      customerFirstName?:
+        example:
+          strict: false
+          value: Max
+        type: string
+      customerLastName?:
+        example:
+          strict: false
+          value: Mule
+        type: string
+      purchaseDate?:
+        example:
+          strict: false
+          value: 2022-06-14T00:00:00.000Z
+        type: datetime
+      purchaseChannel?:
+        example:
+          strict: false
+          value: Mobile
+        type: string
+      billingAddress1?:
+        example:
+          strict: false
+          value: 039 Bruen Light
+        type: string
+      billingAddress2?:
+        example:
+          strict: false
+          value: Street Dr
+        type: string
+      billingCity?:
+        example:
+          strict: false
+          value: Raleigh
+        type: string
+      billingState?:
+        example:
+          strict: false
+          value: NC
+        type: string
+      billingPostalCode?:
+        example:
+          strict: false
+          value: 27502NC
+        type: string
+      billingCountry?:
+        example:
+          strict: false
+          value: US
+        type: string
+      shippingAddress1?:
+        example:
+          strict: false
+          value: 987 My Street
+        type: string
+      shippingAddress2?:
+        example:
+          strict: false
+          value: 654 Your Dr
+        type: string
+      shippingCity?:
+        example:
+          strict: false
+          value: Raleigh
+        type: string
+      shippingState?:
+        example:
+          strict: false
+          value: NC
+        type: string
+      shippingPostalCode?:
+        example:
+          strict: false
+          value: 27502NC
+        type: string
+      shippingCountry?:
+        example:
+          strict: false
+          value: US
+        type: string
+      estimatedDeliveryDate?:
+        example:
+          strict: false
+          value: 2022-10-10T00:00:00.000Z
+        type: datetime
+      actualDeliveryDate?:
+        example:
+          strict: false
+          value: 2022-10-10T00:00:00.000Z
+        type: datetime
+      numberOfItems?:
+        example:
+          strict: false
+          value: 55
+        type: integer
+      totalAmount?:
+        example:
+          strict: false
+          value: 784
+        type: number
+      storeID?:
+        example:
+          strict: false
+          value: 11A
+        type: string
+      paymentMethod?:
+        example:
+          strict: false
+          value: Credit Card
+        type: string
+  orderDetails:
+    type: object
+    properties:
+      orderID:
+        example:
+          strict: false
+          value: Ord140001
+        type: string
+        required: true
+      customerID?:
+        example:
+          strict: false
+          value: C140001
+        type: string
+      purchaseDate?:
+        example:
+          strict: false
+          value: 2022-06-14T00:00:00.000Z
+        type: datetime
+      customerEmail?:
+        example:
+          strict: false
+          value: p.s.8813466@gmail.com
+        type: string
+      deliveryMethod?:
+        example:
+          strict: false
+          value: In-Store Pickup
+        type: string
+      productName?:
+        example:
+          strict: false
+          value: Anypoint Studio
+        type: string
+      productSKU:
+        example:
+          strict: false
+          value: 3010499A8OACT
+        type: string
+        required: true
+      productQuantity?:
+        example:
+          strict: false
+          value: 55
+        type: integer
+      productUnitPrice?:
+        example:
+          strict: false
+          value: 250
+        type: number
+      productSalePrice?:
+        example:
+          strict: false
+          value: 199
+        type: number
+      productSubTotalAmount?:
+        example:
+          strict: false
+          value: 378
+        type: number
+annotationTypes:
+  amf-serverDescription:
+    type: any
+  amf-exclusiveMinimum:
+    type: any
+  amf-binding:
+    type: any
+  amf-pattern:
+    type: any
+  amf-payloads:
+    type: any
+  amf-exclusiveMaximum:
+    type: any
+  amf-consumes:
+    type: any
+  amf-additionalProperties:
+    type: any
+  amf-or:
+    type: any
+  amf-url:
+    type: any
+  amf-externalDocs:
+    type: any
+  amf-flow:
+    type: any
+  amf-oasDeprecated:
+    type: any
+  amf-contact:
+    type: any
+  amf-multipleOf:
+    type: any
+  amf-xor:
+    type: any
+  amf-not:
+    type: any
+  amf-callbacks:
+    type: any
+  amf-produces:
+    type: any
+  amf-format:
+    type: any
+  amf-license:
+    type: any
+  amf-summary:
+    type: any
+  amf-responses:
+    type: any
+  amf-maximum:
+    type: any
+  amf-tags:
+    type: any
+  amf-dependencies:
+    type: any
+  amf-readOnly:
+    type: any
+  amf-tuple:
+    type: any
+  amf-examples:
+    type: any
+  amf-collectionFormat:
+    type: any
+  amf-termsOfService:
+    type: any
+  amf-servers:
+    type: any
+  amf-xone:
+    type: any
+  amf-defaultResponse:
+    type: any
+  amf-baseUriParameters:
+    type: any
+  amf-parameters:
+    type: any
+  amf-minimum:
+    type: any
+  amf-recursive:
+    type: any
+  amf-and:
+    type: any
+title: Mulesoft Order API
+description: Mulesoft Order API specification for RCG Mulesoft + Salesforce CDP Better Together Initiative
+version: 1.0.0
+/orderDetails:
+  post:
+    (amf-summary): Insert new orderDetails records
+    body:
+      application/json:
+        type: array
+        items: orderDetails
+    responses:
+      "202":
+        description: Accepted
+      "401":
+        description: Unauthorized
+      "500":
+        description: Internal Server Error
+  get:
+    (amf-summary): Get orderDetails records
+    responses:
+      "200":
+        description: Accepted
+        body:
+          application/json:
+            type: array
+            items: orderDetails
+/orderHeader:
+  post:
+    (amf-summary): Insert new orderHeader records
+    body:
+      application/json:
+        type: array
+        items: orderHeader
+    responses:
+      "202":
+        description: Accepted
+      "401":
+        description: Unauthorized
+      "500":
+        description: Internal Server Error
+  get:
+    (amf-summary): Get orderHeader records
+    responses:
+      "200":
+        description: Accepted
+        body:
+          application/json:
+            type: array
+            items: orderHeader

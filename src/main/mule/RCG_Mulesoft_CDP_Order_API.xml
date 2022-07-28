@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:sdc="http://www.mulesoft.org/schema/mule/sdc" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+http://www.mulesoft.org/schema/mule/sdc http://www.mulesoft.org/schema/mule/sdc/current/mule-sdc.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+    <apikit:config name="RCG_Mulesoft_CDP_Order_API-config" api="RCG_Mulesoft_CDP_Order_API.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <sdc:sdc-config name="Salesforce_CDP_config" doc:name="Salesforce CDP Sdc config" doc:id="351bc012-f149-4014-a608-bacb711447c2" >
+		<sdc:oauth-user-pass-connection clientId="${cdp.key}" clientSecret="${cdp.secret}" username="${cdp.user}" password="${cdp.pass}" audienceUrl="https://login.salesforce.com"/>
+	</sdc:sdc-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="c75ce15d-c352-4edd-a11c-1fb25f16e435" file="config/configuration.yaml" />
+	<api-gateway:autodiscovery apiId="${api.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="d221f352-4f33-4891-8c2f-be8f7e7cb7e2" flowRef="RCG_Mulesoft_CDP_Order_API-main" />
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="79bb9d5d-bf1d-418d-be88-0aa1ba084eae" >
+		<http:listener-connection host="0.0.0.0" port="8085" />
+	</http:listener-config>
+	<flow name="RCG_Mulesoft_CDP_Order_API-main">
+        <http:listener config-ref="1Platform_HTTPS_Listener_config" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="RCG_Mulesoft_CDP_Order_API-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="RCG_Mulesoft_CDP_Order_API-console">
+        <http:listener config-ref="1Platform_HTTPS_Listener_config" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="RCG_Mulesoft_CDP_Order_API-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="get:\orderHeader:RCG_Mulesoft_CDP_Order_API-config">
+        <logger level="INFO" message="Order Header Retrieved" />
+    </flow>
+    <flow name="get:\orderDetails:RCG_Mulesoft_CDP_Order_API-config">
+        <logger level="INFO" message="Order Details Retrieved" />
+    </flow>
+	<flow name="post:\orderDetails:application\json:RCG_Mulesoft_CDP_Order_API-config">
+        <ee:transform doc:name="Transform Message" doc:id="d5b8546c-e699-469a-aec1-d1f293b6fcd1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	data: payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="0c92c704-de56-4c78-b306-8abdd04bc1cc" millisBetweenRetries="2000">
+			<sdc:insert-objects doc:name="Streaming - Insert Objects" doc:id="bca36d4c-bf8a-4d90-9ee1-b6937895ce55" sourceNameUriParam="Mulesoft_Demo" objectNameUriParam="orderDetails" config-ref="Salesforce_CDP_config"/>
+		</until-successful>
+		<ee:transform doc:name="Transform Message" doc:id="4a521c23-15a2-471f-9f9c-faa7ffaaeebf" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message" : "Order Headers Successfully Sent To CDP"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+    </flow>
+    <flow name="post:\orderHeader:application\json:RCG_Mulesoft_CDP_Order_API-config">
+        <ee:transform doc:name="Transform Message" doc:id="181b652a-69d2-4626-99a8-4d4b2a85b937" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	data: payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="67defbb1-f475-4a18-9be0-2d996ee80411" millisBetweenRetries="2000">
+			<sdc:insert-objects doc:name="Streaming - Insert Objects" doc:id="2b928b32-e9b6-45b8-97aa-d8b723dc790f" sourceNameUriParam="Mulesoft_Demo" objectNameUriParam="orderHeader" config-ref="Salesforce_CDP_config"/>
+		</until-successful>
+		<ee:transform doc:name="Transform Message" doc:id="6964e9dd-7690-47c1-b1da-60420497f1e6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message" : "Order Details Successfully Sent To CDP"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+    </flow>
+</mule>
