@@ -56,8 +56,8 @@
 							<!--  APP CREDENTIALS (to be used in Mule app, if needed) injected via Jenkinsfile  -->
 							<!--  For example only; remove/edit as needed. SAMPLE_USER & SAMPLE_PWD are set in Jenkinsfile -->
 							<!--  sample.username used within Mule app as ${sample.username} -->
-							<cdp.key>${env.APP_CDP_KEY}</cdp.key>
-							<cdp.secret>${env.APP_CDP_SECRET}</cdp.secret>
+							<cdp.key>${env.CDP_KEY}</cdp.key>
+							<cdp.secret>${env.CDP_SECRET}</cdp.secret>
 						</properties>
 					</cloudHubDeployment>
 				</configuration>

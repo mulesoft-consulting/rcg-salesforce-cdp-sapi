@@ -1,16 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:sdc="http://www.mulesoft.org/schema/mule/sdc"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
-http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd
+http://www.mulesoft.org/schema/mule/sdc http://www.mulesoft.org/schema/mule/sdc/current/mule-sdc.xsd">
 	<http:listener-config name="1Platform_HTTPS_Listener_config" doc:name="HTTP Listener config" doc:id="00ff416d-c9b1-4269-b850-2dc1f4be4716" >
+	
 		<http:listener-connection protocol="HTTPS" host="0.0.0.0" port="8082" >
 			<tls:context >
 				<tls:key-store type="jks" keyPassword="${keystore.password}" password="${keystore.password}" path="${keystore.path}"/>
 			</tls:context>
 		</http:listener-connection>
 	</http:listener-config>
+	
+	<apikit:config name="RCG_Mulesoft_CDP_Order_API-config" api="RCG_Mulesoft_CDP_Order_API.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+   	<sdc:sdc-config name="Salesforce_CDP_config" doc:name="Salesforce CDP Sdc config" doc:id="74e2d3a3-3d0e-43cc-ae58-31691a7f6866" >
+		<sdc:oauth-user-pass-connection clientId="${cdp.key}" clientSecret="${cdp.secret}" username="${cdp.user}" password="${cdp.pass}" audienceUrl="https://login.salesforce.com"/>
+	</sdc:sdc-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="995efe8b-a2b0-48c0-ad7a-ef4229871e6b" file="config/configuration.yaml" />
+	<api-gateway:autodiscovery apiId="${api.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="540eddaf-4d9a-4d5b-b597-b69f716a6558" flowRef="RCG_Mulesoft_CDP_Order_API-main" />
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="e5256e8e-f0c8-4253-9c37-e71519bb38d5" >
+		<http:listener-connection host="0.0.0.0" port="8085" />
+	</http:listener-config>
+	
 </mule>

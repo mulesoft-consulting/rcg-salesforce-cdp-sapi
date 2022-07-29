@@ -2,15 +2,6 @@
 <mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:sdc="http://www.mulesoft.org/schema/mule/sdc" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
 http://www.mulesoft.org/schema/mule/sdc http://www.mulesoft.org/schema/mule/sdc/current/mule-sdc.xsd
 http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
-    <apikit:config name="RCG_Mulesoft_CDP_Order_API-config" api="RCG_Mulesoft_CDP_Order_API.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
-    <sdc:sdc-config name="Salesforce_CDP_config" doc:name="Salesforce CDP Sdc config" doc:id="351bc012-f149-4014-a608-bacb711447c2" >
-		<sdc:oauth-user-pass-connection clientId="${cdp.key}" clientSecret="${cdp.secret}" username="${cdp.user}" password="${cdp.pass}" audienceUrl="https://login.salesforce.com"/>
-	</sdc:sdc-config>
-	<configuration-properties doc:name="Configuration properties" doc:id="c75ce15d-c352-4edd-a11c-1fb25f16e435" file="config/configuration.yaml" />
-	<api-gateway:autodiscovery apiId="${api.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="d221f352-4f33-4891-8c2f-be8f7e7cb7e2" flowRef="RCG_Mulesoft_CDP_Order_API-main" />
-	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="79bb9d5d-bf1d-418d-be88-0aa1ba084eae" >
-		<http:listener-connection host="0.0.0.0" port="8085" />
-	</http:listener-config>
 	<flow name="RCG_Mulesoft_CDP_Order_API-main">
         <http:listener config-ref="1Platform_HTTPS_Listener_config" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
