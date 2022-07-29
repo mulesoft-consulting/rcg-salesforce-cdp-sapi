@@ -8,8 +8,8 @@ node(label: 'mule-builder') {
   		which is then used within Mule app as ${vendor.username} */
   		
   withCredentials([
-    usernamePassword(credentialsId: "${BRANCH_NAME}-develop-cdp-consumer-credentials", usernameVariable: "CDP_KEY", passwordVariable: "CDP_SECRET"),
-    usernamePassword(credentialsId: "${BRANCH_NAME}-develop-cdp-access-credentials", usernameVariable: "CDP_USER", passwordVariable: "CDP_PASS")
+    usernamePassword(credentialsId: "${BRANCH_NAME}-cdp-consumer-credentials", usernameVariable: "CDP_KEY", passwordVariable: "CDP_SECRET"),
+    usernamePassword(credentialsId: "${BRANCH_NAME}-cdp-access-credentials", usernameVariable: "CDP_USER", passwordVariable: "CDP_PASS")
   ]) {
   
   	/* -X for Maven debug mode */
