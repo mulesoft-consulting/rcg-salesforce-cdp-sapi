@@ -13,10 +13,7 @@ node(label: 'mule-builder') {
   ]) {
   
   	/* -X for Maven debug mode */
-  	def mvnParams = "-Denv.CDP_KEY=${CDP_KEY} 
-  	-Denv.CDP_SECRET=${CDP_SECRET}
-  	-Denv.CDP_USER=${CDP_USER}
-  	-Denv.CDP_PASS=${CDP_PASS}"
+  	def mvnParams = "-Denv.CDP_KEY=${CDP_KEY} -Denv.CDP_SECRET=${CDP_SECRET} -Denv.CDP_USER=${CDP_USER} -Denv.CDP_PASS=${CDP_PASS}"
     map.put('mvnParams', mvnParams)
     map.put('SLAVE_NODE_NAME', "mule-builder")
     map.put('MULE_RUNTIME_VERSION', "4.4.0")
