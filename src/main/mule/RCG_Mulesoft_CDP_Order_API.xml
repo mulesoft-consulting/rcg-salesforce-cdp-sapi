@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:sdc="http://www.mulesoft.org/schema/mule/sdc" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:sdc="http://www.mulesoft.org/schema/mule/sdc" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
 http://www.mulesoft.org/schema/mule/sdc http://www.mulesoft.org/schema/mule/sdc/current/mule-sdc.xsd
-http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
+	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="c9278c6d-541a-4f54-967b-60a2338b8f4e" >
+		<email:smtp-connection host="sendgrid-email-api.us-e1.cloudhub.io" />
+	</email:smtp-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="03953856-afa6-4504-84e9-62f8d7133682" >
+		<http:request-connection host="sendgrid-email-api.us-e1.cloudhub.io" />
+	</http:request-config>
 	<flow name="RCG_Mulesoft_CDP_Order_API-main">
         <http:listener config-ref="1Platform_HTTPS_Listener_config" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
@@ -128,7 +135,7 @@ output application/json
         <logger level="INFO" message="Order Details Retrieved" />
     </flow>
 	<flow name="post:\orderDetails:application\json:RCG_Mulesoft_CDP_Order_API-config">
-        <ee:transform doc:name="Transform Message" doc:id="d5b8546c-e699-469a-aec1-d1f293b6fcd1" >
+        <ee:transform doc:name="Transform request body to CDP data format" doc:id="d5b8546c-e699-469a-aec1-d1f293b6fcd1" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -139,11 +146,28 @@ output application/json
 			</ee:message>
 		</ee:transform>
 		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="0c92c704-de56-4c78-b306-8abdd04bc1cc" millisBetweenRetries="2000">
-			<sdc:insert-objects doc:name="Streaming - Insert Objects" doc:id="bca36d4c-bf8a-4d90-9ee1-b6937895ce55" sourceNameUriParam="Mulesoft_Demo" objectNameUriParam="orderDetails" config-ref="Salesforce_CDP_config"/>
+			<sdc:insert-objects doc:name="Streaming - Insert Objects" doc:id="bca36d4c-bf8a-4d90-9ee1-b6937895ce55" sourceNameUriParam="Mulesoft" objectNameUriParam="orderDetails" config-ref="Salesforce_CDP_config"/>
 		</until-successful>
-		<ee:transform doc:name="Transform Message" doc:id="4a521c23-15a2-471f-9f9c-faa7ffaaeebf" >
+		<ee:transform doc:name="Transform Message" doc:id="33725c7e-b3a8-4679-8999-f53fc7cb6ffc" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+"from": "cdp-req@rcg-platform-se.com",
+"to": "priya.singh@mulesoft.com",
+"subject": "CDP Mule 1Platform demo invoked",
+"bodyTitle": "Demo RCG_Mulesoft_CDP_Order_API is called",
+"bodyDesc": now() as DateTime ,
+"attachmentName": "",
+"attachmentContentJson": ""
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request" doc:id="de2469e3-c751-43d6-b00e-296a708decf5" config-ref="HTTP_Request_configuration" path="/api/email"/>
+		<ee:transform doc:name="Transform Message" doc:id="4a521c23-15a2-471f-9f9c-faa7ffaaeebf">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
@@ -153,7 +177,7 @@ output application/json
 		</ee:transform>
     </flow>
     <flow name="post:\orderHeader:application\json:RCG_Mulesoft_CDP_Order_API-config">
-        <ee:transform doc:name="Transform Message" doc:id="181b652a-69d2-4626-99a8-4d4b2a85b937" >
+        <ee:transform doc:name="Transform request body to CDP data format" doc:id="181b652a-69d2-4626-99a8-4d4b2a85b937" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -164,11 +188,28 @@ output application/json
 			</ee:message>
 		</ee:transform>
 		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="67defbb1-f475-4a18-9be0-2d996ee80411" millisBetweenRetries="2000">
-			<sdc:insert-objects doc:name="Streaming - Insert Objects" doc:id="2b928b32-e9b6-45b8-97aa-d8b723dc790f" sourceNameUriParam="Mulesoft_Demo" objectNameUriParam="orderHeader" config-ref="Salesforce_CDP_config"/>
+			<sdc:insert-objects doc:name="Streaming - Insert Objects" doc:id="2b928b32-e9b6-45b8-97aa-d8b723dc790f" sourceNameUriParam="Mulesoft" objectNameUriParam="orderHeader" config-ref="Salesforce_CDP_config"/>
 		</until-successful>
-		<ee:transform doc:name="Transform Message" doc:id="6964e9dd-7690-47c1-b1da-60420497f1e6" >
+		<ee:transform doc:name="Transform Message" doc:id="bf728b24-e6e2-4dc4-bace-87364e82240c" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+"from": "cdp-req@rcg-platform-se.com",
+"to": "priya.singh@mulesoft.com",
+"subject": "CDP Mule 1Platform demo invoked",
+"bodyTitle": "Demo RCG_Mulesoft_CDP_Order_API is called",
+"bodyDesc": now() as DateTime ,
+"attachmentName": "",
+"attachmentContentJson": ""
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request" doc:id="2f28241d-de44-4f32-80d9-914abc60ff9d" path="/api/email" config-ref="HTTP_Request_configuration"/>
+		<ee:transform doc:name="Transform Message" doc:id="6964e9dd-7690-47c1-b1da-60420497f1e6">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {

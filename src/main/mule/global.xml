@@ -23,9 +23,9 @@ http://www.mulesoft.org/schema/mule/sdc http://www.mulesoft.org/schema/mule/sdc/
 		<sdc:oauth-user-pass-connection clientId="${cdp.key}" clientSecret="${cdp.secret}" username="${cdp.user}" password="${cdp.pass}" audienceUrl="https://login.salesforce.com"/>
 	</sdc:sdc-config>
 	<configuration-properties doc:name="Configuration properties" doc:id="995efe8b-a2b0-48c0-ad7a-ef4229871e6b" file="config/configuration.yaml" />
-	<api-gateway:autodiscovery apiId="${api.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="540eddaf-4d9a-4d5b-b597-b69f716a6558" flowRef="RCG_Mulesoft_CDP_Order_API-main" />
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="e5256e8e-f0c8-4253-9c37-e71519bb38d5" >
 		<http:listener-connection host="0.0.0.0" port="8085" />
 	</http:listener-config>
+	<api-gateway:autodiscovery apiId="${api.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="9bb4d49f-77e4-4139-93ee-e479cf162fe3" flowRef="RCG_Mulesoft_CDP_Order_API-main" />
 	
 </mule>
